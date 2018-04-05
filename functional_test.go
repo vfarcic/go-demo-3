@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type FunctionalTestSuite struct {
@@ -24,7 +25,6 @@ func TestFunctionalTestSuite(t *testing.T) {
 	suite.Run(t, s)
 }
 
-
 func (s *FunctionalTestSuite) SetupTest() {
 }
 
@@ -32,6 +32,7 @@ func (s *FunctionalTestSuite) SetupTest() {
 
 func (s FunctionalTestSuite) Test_Hello_ReturnsStatus200() {
 	address := fmt.Sprintf("http://%s%s/hello", s.hostIp, s.servicePath)
+	logPrintf("Sending a request to %s\n", address)
 	resp, err := http.Get(address)
 
 	s.NoError(err)
@@ -40,6 +41,7 @@ func (s FunctionalTestSuite) Test_Hello_ReturnsStatus200() {
 
 func (s FunctionalTestSuite) Test_Person_ReturnsStatus200() {
 	address := fmt.Sprintf("http://%s%s/person", s.hostIp, s.servicePath)
+	logPrintf("Sending a request to %s\n", address)
 	resp, err := http.Get(address)
 
 	s.NoError(err)
