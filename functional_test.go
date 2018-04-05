@@ -17,7 +17,7 @@ type FunctionalTestSuite struct {
 
 func TestFunctionalTestSuite(t *testing.T) {
 	s := new(FunctionalTestSuite)
-	s.hostIp = os.Getenv("HOST_IP")
+	s.hostIp = os.Getenv("ADDRESS")
 	s.servicePath = "/demo"
 	if len(os.Getenv("SERVICE_PATH")) > 0 {
 		s.servicePath = os.Getenv("SERVICE_PATH")

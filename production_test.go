@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"os"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type ProductionTestSuite struct {
@@ -17,7 +18,7 @@ type ProductionTestSuite struct {
 
 func TestProductionTestSuite(t *testing.T) {
 	s := new(ProductionTestSuite)
-	s.hostIp = os.Getenv("HOST_IP")
+	s.hostIp = os.Getenv("ADDRESS")
 	suite.Run(t, s)
 }
 
