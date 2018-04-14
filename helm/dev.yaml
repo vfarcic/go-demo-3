@@ -1,0 +1,8 @@
+replicaCount: 1
+dbReplicaCount: 1
+ingress:
+  enabled: false
+service:
+  type: NodePort
+rbac:
+  enabled: false

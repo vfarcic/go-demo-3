@@ -6,6 +6,9 @@ image:
 ingress:
   enabled: true
   path: /demo
+service:
+  # Change to NodePort if ingress.enable=false
+  type: ClusterIP
 rbac:
   enabled: true
 resources: {}

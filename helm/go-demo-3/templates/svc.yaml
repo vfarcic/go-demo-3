@@ -29,6 +29,7 @@ metadata:
 spec:
   ports:
   - port: 8080
+  type: {{ .Values.service.type }}
   selector:
     app: {{ template "helm.name" . }}
     release: {{ .Release.Name }}

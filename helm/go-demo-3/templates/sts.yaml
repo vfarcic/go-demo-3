@@ -20,7 +20,9 @@ spec:
         app: {{ template "helm.name" . }}-db
         release: {{ .Release.Name }}
     spec:
+      {{- if .Values.rbac.enabled }}
       serviceAccountName: {{ template "helm.fullname" . }}-db
+      {{- end }}
       terminationGracePeriodSeconds: 10
       containers:
       - name: db
