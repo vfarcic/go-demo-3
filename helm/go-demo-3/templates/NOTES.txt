@@ -3,9 +3,9 @@
 
 2. Test the application by running these commands:
 {{- if .Values.ingress.enabled }}
-{{- range .Values.ingress.hosts }}
-  http://{{ . }}
-{{- end }}
+  export LB_IP=$(kubectl -n {{ .Release.Namespace }} get ing {{ template "helm.fullname" . }} -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+
+  curl http://$NODE_IP/{{ .Values.ingress.path }}/hello
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl -n {{ .Release.Namespace }} get svc {{ template "helm.fullname" . }} -o jsonpath="{.spec.ports[0].nodePort}")
 
@@ -15,7 +15,7 @@
   # If you are NOT running Docker for Mac/Windows
   export NODE_IP=$(kubectl -n {{ .Release.Namespace }} get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
 
-  curl http://$NODE_IP:$NODE_PORT/demo/hello
+  curl http://$NODE_IP:$NODE_PORT/{{ .Values.ingress.path }}/hello
 {{- else }}
   You set ingress.enabled=false and service.type is not set to NodePort. The application cannot be accessed from outside the cluster.
 {{- end }}
