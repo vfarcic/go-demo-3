@@ -6,3 +6,5 @@ service:
   type: NodePort
 rbac:
   enabled: false
+resources: {}
+dbResources: {}
