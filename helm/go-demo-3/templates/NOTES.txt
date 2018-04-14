@@ -5,7 +5,7 @@
 {{- if .Values.ingress.enabled }}
   export LB_IP=$(kubectl -n {{ .Release.Namespace }} get ing {{ template "helm.fullname" . }} -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
 
-  curl http://$NODE_IP/{{ .Values.ingress.path }}/hello
+  curl http://$LB_IP{{ .Values.ingress.path }}/hello
 {{- else if contains "NodePort" .Values.service.type }}
   export NODE_PORT=$(kubectl -n {{ .Release.Namespace }} get svc {{ template "helm.fullname" . }} -o jsonpath="{.spec.ports[0].nodePort}")
 
