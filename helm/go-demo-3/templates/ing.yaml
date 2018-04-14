@@ -1,0 +1,27 @@
+{{- if .Values.ingress.enabled -}}
+{{- $serviceName := include "helm.fullname" . -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "helm.fullname" . }}
+  labels:
+    app: {{ template "helm.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    {{- if ne .Values.ingress.path "/demo" }}
+    ingress.kubernetes.io/rewrite-target: "/demo"
+    nginx.ingress.kubernetes.io/rewrite-target: "/demo"
+    {{- end }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: {{ .Values.ingress.path }}
+        backend:
+          serviceName: {{ $serviceName }}
+          servicePort: 8080
+{{- end -}}

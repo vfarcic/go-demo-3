@@ -1,0 +1,38 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "helm.fullname" . }}
+  labels:
+    app: {{ template "helm.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "helm.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "helm.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: api
+        image: "vfarcic/go-demo-3:{{ .Values.image.tag }}"
+        env:
+        - name: DB
+          value: {{ template "helm.fullname" . }}-db
+        readinessProbe:
+          httpGet:
+            path: /demo/hello
+            port: 8080
+          periodSeconds: 1
+        livenessProbe:
+          httpGet:
+            path: /demo/hello
+            port: 8080
+        resources:
+{{ toYaml .Values.resources | indent 10 }}

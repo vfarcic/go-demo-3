@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ template "helm.fullname" . }}-db
+  labels:
+    app: {{ template "helm.name" . }}-db
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  serviceName: {{ template "helm.fullname" . }}-db
+  replicas: {{ .Values.dbReplicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "helm.name" . }}-db
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "helm.name" . }}-db
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "helm.fullname" . }}-db
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: db
+        image: "mongo:{{ .Values.image.dbTag }}"
+        command:
+          - mongod
+          - "--replSet"
+          - rs0
+          - "--smallfiles"
+          - "--noprealloc"
+        ports:
+          - containerPort: 27017
+        resources:
+{{ toYaml .Values.dbResources | indent 10 }}
+        volumeMounts:
+        - name: {{ template "helm.name" . }}-db
+          mountPath: /data/db
+      - name: db-sidecar
+        image: cvallance/mongo-k8s-sidecar
+        env:
+        - name: MONGO_SIDECAR_POD_LABELS
+          value: "app={{ template "helm.name" . }}-db"
+        - name: KUBE_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: KUBERNETES_MONGO_SERVICE_NAME
+          value: app={{ template "helm.name" . }}-db
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ template "helm.name" . }}-db
+      labels:
+        app: {{ template "helm.name" . }}-db
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+    spec:
+      accessModes:
+      - {{ .Values.dbPersistence.accessMode }}
+      resources:
+        requests:
+          storage: {{ .Values.dbPersistence.size }}
+      {{- if .Values.dbPersistence.storageClass }}
+      {{- if eq "-" .Values.dbPersistence.storageClass }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: "{{ .Values.dbPersistence.storageClass }}"
+      {{- end }}
+      {{- end }}
