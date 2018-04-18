@@ -38,20 +38,20 @@ spec:
         resources:
 {{ toYaml .Values.dbResources | indent 10 }}
         volumeMounts:
-        - name: {{ template "helm.name" . }}-db
+        - name: {{ template "helm.fullname" . }}-db
           mountPath: /data/db
       - name: db-sidecar
         image: cvallance/mongo-k8s-sidecar
         env:
         - name: MONGO_SIDECAR_POD_LABELS
-          value: "app={{ template "helm.name" . }}-db"
+          value: app={{ template "helm.name" . }}-db,release={{ .Release.Name }}
         - name: KUBE_NAMESPACE
           value: {{ .Release.Namespace }}
         - name: KUBERNETES_MONGO_SERVICE_NAME
-          value: app={{ template "helm.name" . }}-db
+          value: {{ template "helm.fullname" . }}-db
   volumeClaimTemplates:
   - metadata:
-      name: {{ template "helm.name" . }}-db
+      name: {{ template "helm.fullname" . }}-db
       labels:
         app: {{ template "helm.name" . }}-db
         chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: 27017
-    clusterIP: None
+  clusterIP: None
   selector:
     app: {{ template "helm.name" . }}-db
     release: {{ .Release.Name }}
