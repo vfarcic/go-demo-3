@@ -1,11 +1,4 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: go-demo-3-build
-
----
-
-apiVersion: v1
 kind: Pod
 metadata:
   name: kubectl
