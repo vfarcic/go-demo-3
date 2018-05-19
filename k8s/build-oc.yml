@@ -173,7 +173,8 @@ metadata:
   namespace: go-demo-3-build
 spec:
   type: LoadBalancer
-  ports:
-  - port: 8080
   selector:
     app: api
+  ports:
+  - name: http
+    port: 8080
