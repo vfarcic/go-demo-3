@@ -1,21 +1,19 @@
-apiVersion: extensions/v1beta1
-kind: Ingress
+apiVersion: v1
+kind: Route
 metadata:
   name: api
   namespace: go-demo-3-build
-  annotations:
-    ingress.kubernetes.io/ssl-redirect: "false"
-    ingress.kubernetes.io/rewrite-target: "/demo"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: "/demo"
 spec:
-  rules:
-  - http:
-      paths:
-      - path: /beta/demo
-        backend:
-          serviceName: api
-          servicePort: 8080
+  path: /demo
+  to:
+    kind: Service
+    name: api
+  port:
+    targetPort: http
+  wildcardPolicy: None
+  tls:
+    insecureEdgeTerminationPolicy: Allow
+    termination: edge
 
 ---
 
@@ -174,6 +172,7 @@ metadata:
   name: api
   namespace: go-demo-3-build
 spec:
+  type: LoadBalancer
   ports:
   - port: 8080
   selector:
