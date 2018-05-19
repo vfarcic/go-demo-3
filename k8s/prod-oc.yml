@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Route
 metadata:
   name: api
-  namespace: go-demo-3-build
+  namespace: go-demo-3
 spec:
   path: /demo
   to:
