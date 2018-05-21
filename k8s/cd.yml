@@ -14,6 +14,7 @@ spec:
       mountPath: /workspace
     - name: docker-socket
       mountPath: /var/run/docker.sock
+    workingDir: /workspace
   - name: kubectl
     image: vfarcic/kubectl
     command: ["sleep"]
@@ -21,6 +22,7 @@ spec:
     volumeMounts:
     - name: workspace
       mountPath: /workspace
+    workingDir: /workspace
   - name: oc
     image: vfarcic/openshift-client
     command: ["sleep"]
@@ -28,6 +30,7 @@ spec:
     volumeMounts:
     - name: workspace
       mountPath: /workspace
+    workingDir: /workspace
   - name: golang
     image: golang:1.9
     command: ["sleep"]
@@ -35,6 +38,7 @@ spec:
     volumeMounts:
     - name: workspace
       mountPath: /workspace
+    workingDir: /workspace
   serviceAccount: build
   volumes:
   - name: docker-socket

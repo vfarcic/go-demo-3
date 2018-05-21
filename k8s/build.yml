@@ -4,6 +4,7 @@ metadata:
   name: api
   namespace: go-demo-3-build
   annotations:
+    kubernetes.io/ingress.class: nginx
     ingress.kubernetes.io/ssl-redirect: "false"
     ingress.kubernetes.io/rewrite-target: "/demo"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
