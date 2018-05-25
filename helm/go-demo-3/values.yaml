@@ -5,7 +5,7 @@ image:
   dbTag: 3.3
 ingress:
   enabled: true
-  path: /demo
+  host: acme.com
 service:
   # Change to NodePort if ingress.enable=false
   type: ClusterIP
