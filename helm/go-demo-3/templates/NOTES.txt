@@ -18,5 +18,7 @@
 
   curl http://$NODE_IP:$PORT/demo/hello
 {{- else }}
-  You set ingress.enabled=false and service.type is not set to NodePort. The application cannot be accessed from outside the cluster.
+  If the application is running in OpenShift, please create a Route to enable access.
+
+  For everyone else, you set ingress.enabled=false and service.type is not set to NodePort. The application cannot be accessed from outside the cluster.
 {{- end }}
