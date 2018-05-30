@@ -21,22 +21,6 @@ subjects:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: RoleBinding
-metadata:
-  name: go-demo-3-build
-  namespace: kube-system
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: admin
-subjects:
-- kind: ServiceAccount
-  name: build
-  namespace: go-demo-3-build
-
----
-
 apiVersion: v1
 kind: LimitRange
 metadata:
