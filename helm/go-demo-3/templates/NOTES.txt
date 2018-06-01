@@ -1,4 +1,4 @@
-1. Wait until the applicaiton is rolled out:
+1. Wait until the application is rolled out:
   kubectl -n {{ .Release.Namespace }} rollout status deployment {{ template "helm.fullname" . }}
 
 2. Test the application by running these commands:
