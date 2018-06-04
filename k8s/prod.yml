@@ -144,7 +144,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: vfarcic/go-demo-3:latest
+        image: digitalinside/go-demo-3:latest
         env:
         - name: DB
           value: db
