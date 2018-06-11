@@ -1,12 +1,14 @@
 import java.text.SimpleDateFormat
 
 
+//https://issues.jenkins-ci.org/browse/JENKINS-51255
+
 pipeline {
   agent {
     kubernetes {
       label 'mypod'
       defaultContainer 'jnlp'
-      yaml readFile "${env.WORKSPACE}/pod.yaml"
+      yaml readFile('pod.yaml')
     }
   }
   
