@@ -5,10 +5,11 @@ env.DH_USER = "digitalinside" // Replace me
 env.PROJECT = "go-demo-3"
 
 def label = "mypod-${UUID.randomUUID().toString()}"
+def podYaml = ""
 
 node {
   checkout scm
-  def podYaml  = yaml readFile('pod.yaml')
+  podYaml  = yaml readFile('pod.yaml')
 }
 
 podTemplate(label: label, yaml: podYaml) {
