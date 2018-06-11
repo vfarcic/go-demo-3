@@ -7,6 +7,7 @@ env.PROJECT = "go-demo-3"
 def label = "mypod-${UUID.randomUUID().toString()}"
 def podYaml = ""
 
+// http://jenkins.192.168.99.100.nip.io/computer/(master)/configure requires number > 0
 node {
   checkout scm
   podYaml  = readFile('pod.yaml')
