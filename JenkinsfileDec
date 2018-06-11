@@ -18,7 +18,7 @@ pipeline {
     kubernetes {
       label 'mypod'
       defaultContainer 'jnlp'
-      yaml "${env.podYaml}"
+      yaml env.podYaml
     }
   }
   
