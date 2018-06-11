@@ -8,7 +8,6 @@ def label = "mypod-${UUID.randomUUID().toString()}"
 def podYaml = ""
 
 node('master') {
-  checkout scm
-  podYaml  = yaml readFile('pod.yaml')
-  echo podYaml
+  
+  echo "podYaml"
 }
