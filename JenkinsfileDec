@@ -27,6 +27,9 @@ pipeline {
       steps {
         script {
           currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
+
+          echo "aaaaa"
+          echo env.podYaml
         }
         container('git') {
           sh """git clone https://github.com/${env.GH_USER}/${env.PROJECT}.git ."""
