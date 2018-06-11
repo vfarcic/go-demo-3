@@ -7,7 +7,7 @@ env.PROJECT = "go-demo-3"
 def label = "mypod-${UUID.randomUUID().toString()}"
 def podYaml = ""
 
-node {
+node('master') {
   checkout scm
   podYaml  = yaml readFile('pod.yaml')
   echo podYaml
