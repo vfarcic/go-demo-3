@@ -9,7 +9,7 @@ def podYaml = ""
 
 node {
   checkout scm
-  podYaml  = yaml readFile('pod.yaml')
+  podYaml  = readFile('pod.yaml')
   echo "${podYaml}"
 }
 
