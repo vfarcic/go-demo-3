@@ -5,8 +5,8 @@ env.DH_USER = "digitalinside" // Replace me
 env.PROJECT = "go-demo-3"
 
 def label = "mypod-${UUID.randomUUID().toString()}"
-podTemplate(label: label, yaml: readFile "${env.WORKSPACE}/pod.yaml"
-) {
+def podYaml  = readFile "${env.WORKSPACE}/pod.yaml"
+podTemplate(label: label, yaml: podYaml) {
   currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
   node(label) {
     stage('build docker') {
