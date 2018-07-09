@@ -15,6 +15,7 @@ env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
 
 podTemplate(
         label: env.BUILDER_POD,
+        namespace: "go-demo-3-build",
         yaml: """         
 apiVersion: v1
 kind: Pod
