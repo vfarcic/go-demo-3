@@ -15,7 +15,8 @@ env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
 
 podTemplate(
         label: env.BUILDER_POD,
-        yaml: """
+        namespace: "go-demo-3-build",
+        yaml: """         
 apiVersion: v1
 kind: Pod
 spec:
@@ -75,8 +76,7 @@ spec:
                 error "Failed functional tests"
             } finally {
                 container("helm") {
-                    sh """helm delete \
-            ${env.CHART_NAME} \
+                    sh """helm delete ${env.CHART_NAME} \
             --tiller-namespace go-demo-3-build \
             --purge"""
                 }
