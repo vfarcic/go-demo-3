@@ -34,12 +34,14 @@ spec:
   node("kubernetes") {
     node("docker") {
       stage("build") {
+        scm checkout
         k8sBuildImageBeta(env.IMAGE)
       }
     }
     stage("func-test") {
       try {
         container("helm") {
+          scm checkout
           k8sUpgradeBeta(env.PROJECT, env.DOMAIN)
         }
         container("kubectl") {
