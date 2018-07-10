@@ -1,12 +1,7 @@
 import java.text.SimpleDateFormat
 
-currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER // NEW!!!
-env.PROJECT = "go-demo-3"
-env.IMAGE = "vfarcic/go-demo-3" 
-env.DOMAIN = "acme.com"
-env.ADDRESS = "go-demo-3.acme.com"
-env.CM_ADDR = "acme.com"
-env.CHART_VER = "0.0.1"
+def props
+currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 
 podTemplate(
   label: "kubernetes",
@@ -21,65 +16,79 @@ spec:
     image: vfarcic/helm:2.9.1
     command: ["cat"]
     tty: true
+    volumeMounts:
+    - name: build-config
+      mountPath: /etc/config
   - name: kubectl
     image: vfarcic/kubectl
     command: ["cat"]
     tty: true
+    volumeMounts:
+    - name: build-config
+      mountPath: /etc/config
   - name: golang
     image: golang:1.9
     command: ["cat"]
     tty: true
+    volumeMounts:
+    - name: build-config
+      mountPath: /etc/config
+  volumes:
+  - name: build-config
+    configMap:
+      name: build-config
 """
 ) {
   node("kubernetes") {
     node("docker") {
       stage("build") {
+        props = readProperties interpolate: true, file: '/etc/config/build-config'
         checkout scm
-        k8sBuildImageBeta(env.IMAGE)
+        k8sBuildImageBeta(props.image)
       }
     }
     stage("func-test") {
       try {
         container("helm") {
           checkout scm
-          k8sUpgradeBeta(env.PROJECT, env.DOMAIN)
+          k8sUpgradeBeta(props.project, props.domain)
         }
         container("kubectl") {
-          k8sRolloutBeta(env.PROJECT)
+          k8sRolloutBeta(props.project)
         }
         container("golang") {
-          k8sFuncTestGolang(env.PROJECT, env.DOMAIN)
+          k8sFuncTestGolang(props.project, props.domain)
         }
       } catch(e) {
           error "Failed functional tests"
       } finally {
         container("helm") {
-          k8sDeleteBeta(env.PROJECT)
+          k8sDeleteBeta(props.project)
         }
       }
     }
     stage("release") {
       node("docker") {
-        k8sPushImage(env.IMAGE)
+        k8sPushImage(props.image)
       }
       container("helm") {
-        k8sPushHelm(env.PROJECT, env.CHART_VER, env.CM_ADDR)
+        k8sPushHelm(props.project, props.chartVer, props.cmAddr)
       }
     }
     stage("deploy") {
       try {
         container("helm") {
-          k8sUpgrade(env.PROJECT, env.ADDRESS)
+          k8sUpgrade(props.project, props.addr)
         }
         container("kubectl") {
-          k8sRollout(env.PROJECT)
+          k8sRollout(props.project)
         }
         container("golang") {
-          k8sProdTestGolang(env.ADDRESS)
+          k8sProdTestGolang(props.addr)
         }
       } catch(e) {
         container("helm") {
-          k8sRollback(env.PROJECT)
+          k8sRollback(props.project)
         }
       }
     }
