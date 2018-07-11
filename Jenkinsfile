@@ -38,9 +38,11 @@ spec:
 
     node("docker") {
         stage("build") {
-            checkout scm
+            def scmVars = checkout scm
+            def commitHash = scmVars.GIT_COMMIT
+            def shortGitCommit = "${commitHash.GIT_COMMIT[0..10]}"
 
-            echo "${env.GIT_COMMIT}"
+            echo "${shortGitCommit}"
 
             sh "ls -al"
             withCredentials([usernamePassword(
