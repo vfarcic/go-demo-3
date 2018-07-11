@@ -5,11 +5,12 @@ currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) +
 
 podTemplate(
   label: "kubernetes",
-  namespace: "go-demo-3-build",
   serviceAccount: "build",
   yaml: """
 apiVersion: v1
 kind: Pod
+metadata:
+    namespace: go-demo-3-build
 spec:
   containers:
   - name: helm
