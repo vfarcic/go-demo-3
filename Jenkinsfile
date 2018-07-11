@@ -52,10 +52,12 @@ spec:
     }
 
     node(env.BUILDER_POD) {
-        checkout scm
+
 
         stage("func-test") {
             try {
+
+                git "${env.REPO}"
                 container("helm") {
 
 
