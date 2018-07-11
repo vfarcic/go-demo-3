@@ -38,7 +38,7 @@ spec:
 
     node("docker") {
         stage("build") {
-            git "${env.REPO}"
+            checkout scm
 
             echo "${env.GIT_COMMIT}"
 
