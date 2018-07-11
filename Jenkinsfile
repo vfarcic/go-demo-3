@@ -11,7 +11,7 @@ env.IMAGE = "${DH_USER}/go-demo-3" // Replace me
 env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.acme.com" // Replace `acme.com` with the $ADDR retrieved earlier
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
-env.shortGitCommit = "${env.GIT_COMMIT[0..10]}"
+
 
 podTemplate(
         label: env.BUILDER_POD,
@@ -39,6 +39,7 @@ spec:
     node("docker") {
         stage("build") {
             git "${env.REPO}"
+            env.shortGitCommit = "${env.GIT_COMMIT[0..10]}"
             sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -t ${env.shortGitCommit} -i . """
             withCredentials([usernamePassword(
                     credentialsId: "docker",
