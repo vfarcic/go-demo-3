@@ -64,30 +64,28 @@ spec:
         }
       }
     }
-    if ("${BRANCH_NAME}" == "master") {
-      stage("release") {
-        node("docker") {
-          k8sPushImage(props.image)
-        }
-        container("helm") {
-          k8sPushHelm(props.project, props.chartVer, props.cmAddr)
-        }
+    stage("release") {
+      node("docker") {
+        k8sPushImage(props.image)
       }
-      stage("deploy") {
-        try {
-          container("helm") {
-            k8sUpgrade(props.project, props.addr)
-          }
-          container("kubectl") {
-            k8sRollout(props.project)
-          }
-          container("golang") {
-            k8sProdTestGolang(props.addr)
-          }
-        } catch(e) {
-          container("helm") {
-            k8sRollback(props.project)
-          }
+      container("helm") {
+        k8sPushHelm(props.project, props.chartVer, props.cmAddr)
+      }
+    }
+    stage("deploy") {
+      try {
+        container("helm") {
+          k8sUpgrade(props.project, props.addr)
+        }
+        container("kubectl") {
+          k8sRollout(props.project)
+        }
+        container("golang") {
+          k8sProdTestGolang(props.addr)
+        }
+      } catch(e) {
+        container("helm") {
+          k8sRollback(props.project)
         }
       }
     }
