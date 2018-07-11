@@ -37,10 +37,9 @@ spec:
 ) {
 
     node("docker") {
-        checkout scm
-
         stage("build") {
-            sh """sudo docker image build -t ${env.IMAGE}:${env.TAG_BETA} ."""
+            git "${env.REPO}"
+            sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -t ${env.shortGitCommit} -i . """
             withCredentials([usernamePassword(
                     credentialsId: "docker",
                     usernameVariable: "USER",
