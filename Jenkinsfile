@@ -37,9 +37,9 @@ spec:
 ) {
 
     node("docker") {
-        stage("build") {
-            checkout scm
+        checkout scm
 
+        stage("build") {
             sh """sudo docker image build -t ${env.IMAGE}:${env.TAG_BETA} ."""
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -53,10 +53,12 @@ spec:
     }
 
     node(env.BUILDER_POD) {
+        checkout scm
+
         stage("func-test") {
             try {
                 container("helm") {
-                    checkout scm
+
 
                     sh """helm upgrade \
             ${env.CHART_NAME} \
