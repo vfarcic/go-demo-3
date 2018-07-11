@@ -88,7 +88,7 @@ spec:
             --tiller-namespace go-demo-3-build \
             --purge"""
                 }
-//            }
+            }
         }
     }
 }
