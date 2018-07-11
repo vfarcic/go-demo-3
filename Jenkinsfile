@@ -1,10 +1,11 @@
 import java.text.SimpleDateFormat
 
 def props
+def label = "jenkins-slave-${UUID.randomUUID().toString()}"
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 
 podTemplate(
-  label: "kubernetes",
+  label: label,
   namespace: "go-demo-3-build", // Not allowed with declarative
   serviceAccount: "build",
   yaml: """
@@ -33,7 +34,7 @@ spec:
       name: build-config
 """
 ) {
-  node("kubernetes") {
+  node(label) {
     stage("build") {
       container("helm") {
         sh "cp /etc/config/build-config.properties ."
