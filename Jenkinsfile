@@ -20,14 +20,7 @@ podTemplate(
 apiVersion: v1
 kind: Pod
 spec:
-  containers:
-  - name: jnlp
-    image: jenkins/jnlp-slave:3.10-1
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        memory: 50Mi    
+  containers:    
   - name: helm
     image: vfarcic/helm:2.8.2
     resources:
