@@ -43,14 +43,13 @@ spec:
             echo "${env.GIT_COMMIT}"
 
             sh "ls -al"
-            
-            sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -t ${env.shortGitCommit} -i . """
             withCredentials([usernamePassword(
                     credentialsId: "docker",
                     usernameVariable: "USER",
                     passwordVariable: "PASS"
             )]) {
                 sh """sudo docker login -u $USER -p $PASS"""
+                sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -i . """
             }
             sh """sudo docker image push ${env.IMAGE}:${env.TAG_BETA}"""
         }
