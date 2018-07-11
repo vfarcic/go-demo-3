@@ -5,7 +5,7 @@ currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) +
 
 podTemplate(
   label: "kubernetes",
-  namespace: "go-demo-3-build",
+  namespace: "go-demo-3-build", // Not allowed with declarative
   serviceAccount: "build",
   yaml: """
 apiVersion: v1
@@ -39,7 +39,7 @@ spec:
         sh "cp /etc/config/build-config.properties ."
         props = readProperties interpolate: true, file: "build-config.properties"
       }
-      node("docker") {
+      node("docker") { // Not allowed with declarative
         checkout scm
         k8sBuildImageBeta(props.image)
       }
