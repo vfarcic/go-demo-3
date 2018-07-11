@@ -42,7 +42,7 @@ spec:
             def commitHash = scmVars.GIT_COMMIT
             def shortGitCommit = "${commitHash[0..10]}"
 
-            stash  name: 'source'
+            stash  name: 'source', useDefaultExcludes: false
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -61,8 +61,6 @@ spec:
         stage("func-test") {
             try {
                 unstash 'source'
-
-                sh "ls -al"
 
                 container("helm") {
                     sh """helm upgrade \
