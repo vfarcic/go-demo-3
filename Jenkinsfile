@@ -42,16 +42,15 @@ spec:
             def commitHash = scmVars.GIT_COMMIT
             def shortGitCommit = "${commitHash[0..10]}"
 
-            echo "${shortGitCommit}"
+            stash  name: 'source'
 
-            sh "ls -al"
             withCredentials([usernamePassword(
                     credentialsId: "docker",
                     usernameVariable: "USER",
                     passwordVariable: "PASS"
             )]) {
                 sh """ sudo docker login -u $USER -p $PASS """
-                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -p -i . """
+                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -t ${shortGitCommit} -l -p -i . """
             }
         }
     }
@@ -61,11 +60,10 @@ spec:
 
         stage("func-test") {
             try {
+                unstash 'source'
 
                 git "${env.REPO}"
                 container("helm") {
-
-
                     sh """helm upgrade \
             ${env.CHART_NAME} \
             helm/go-demo-3 -i \
