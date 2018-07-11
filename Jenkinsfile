@@ -59,37 +59,37 @@ spec:
 
 
         stage("func-test") {
-//            try {
+            try {
                 unstash 'source'
 
                 sh "ls -al"
 
-//                container("helm") {
-//                    sh """helm upgrade \
-//            ${env.CHART_NAME} \
-//            helm/go-demo-3 -i \
-//            --tiller-namespace go-demo-3-build \
-//            --set image.tag=${env.TAG_BETA} \
-//            --set ingress.host=${env.ADDRESS}"""
-//                }
-//                container("kubectl") {
-//                    sh """kubectl -n go-demo-3-build \
-//            rollout status deployment \
-//            ${env.CHART_NAME}"""
-//                }
-//                container("golang") { // Uses env ADDRESS
-//                    sh "go get -d -v -t"
-//                    sh """go test ./... -v \
-//            --run FunctionalTest"""
-//                }
-//            } catch(e) {
-//                error "Failed functional tests"
-//            } finally {
-//                container("helm") {
-//                    sh """helm delete ${env.CHART_NAME} \
-//            --tiller-namespace go-demo-3-build \
-//            --purge"""
-//                }
+                container("helm") {
+                    sh """helm upgrade \
+            ${env.CHART_NAME} \
+            helm/go-demo-3 -i \
+            --tiller-namespace go-demo-3-build \
+            --set image.tag=${env.TAG_BETA} \
+            --set ingress.host=${env.ADDRESS}"""
+                }
+                container("kubectl") {
+                    sh """kubectl -n go-demo-3-build \
+            rollout status deployment \
+            ${env.CHART_NAME}"""
+                }
+                container("golang") { // Uses env ADDRESS
+                    sh "go get -d -v -t"
+                    sh """go test ./... -v \
+            --run FunctionalTest"""
+                }
+            } catch(e) {
+                error "Failed functional tests"
+            } finally {
+                container("helm") {
+                    sh """helm delete ${env.CHART_NAME} \
+            --tiller-namespace go-demo-3-build \
+            --purge"""
+                }
 //            }
         }
     }
