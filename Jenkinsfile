@@ -11,7 +11,7 @@ env.IMAGE = "${DH_USER}/go-demo-3" // Replace me
 env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.acme.com" // Replace `acme.com` with the $ADDR retrieved earlier
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
-
+env.shortGitCommit = "${env.GIT_COMMIT[0..10]}"
 
 podTemplate(
         label: env.BUILDER_POD,
@@ -35,9 +35,11 @@ spec:
     args: ["100000"]
 """
 ) {
+
     node("docker") {
         stage("build") {
-            git "${env.REPO}"
+            checkout scm
+
             sh """sudo docker image build -t ${env.IMAGE}:${env.TAG_BETA} ."""
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -54,7 +56,8 @@ spec:
         stage("func-test") {
             try {
                 container("helm") {
-                    git "${env.REPO}"
+                    checkout scm
+
                     sh """helm upgrade \
             ${env.CHART_NAME} \
             helm/go-demo-3 -i \
