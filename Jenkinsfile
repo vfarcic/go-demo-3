@@ -22,30 +22,15 @@ kind: Pod
 spec:
   containers:    
   - name: helm
-    image: vfarcic/helm:2.8.2
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        memory: 50Mi    
+    image: vfarcic/helm:2.8.2    
     command: ["sleep"]
     args: ["100000"]
   - name: kubectl
     image: vfarcic/kubectl
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        memory: 50Mi
     command: ["sleep"]
     args: ["100000"]
   - name: golang
     image: golang:1.9
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        memory: 50Mi
     command: ["sleep"]
     args: ["100000"]
 """
