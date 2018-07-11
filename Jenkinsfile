@@ -23,16 +23,10 @@ spec:
     image: vfarcic/kubectl
     command: ["cat"]
     tty: true
-    volumeMounts:
-    - name: build-config
-      mountPath: /etc/config
   - name: golang
     image: golang:1.9
     command: ["cat"]
     tty: true
-    volumeMounts:
-    - name: build-config
-      mountPath: /etc/config
   volumes:
   - name: build-config
     configMap:
