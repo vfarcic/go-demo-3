@@ -50,7 +50,7 @@ spec:
                     passwordVariable: "PASS"
             )]) {
                 sh """ sudo docker login -u $USER -p $PASS """
-                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -t ${shortGitCommit} -l -p -i . """
+//                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -t ${shortGitCommit} -l -p -i . """
             }
         }
     }
@@ -59,7 +59,7 @@ spec:
 
 
         stage("func-test") {
-            try {
+//            try {
                 unstash 'source'
 
                 sh "ls -al"
@@ -90,7 +90,7 @@ spec:
 //            --tiller-namespace go-demo-3-build \
 //            --purge"""
 //                }
-            }
+//            }
         }
     }
 }
