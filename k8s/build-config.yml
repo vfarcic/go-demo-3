@@ -2,13 +2,14 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   creationTimestamp: 2016-02-18T19:14:38Z
-  name: go-demo-3-build
+  name: build-config
   namespace: go-demo-3-build
 data:
-  project: go-demo-3
-  image: vfarcic/go-demo-3
-  domain: acme.com
-  addr: go-demo-3.acme.com
-  cmAddr: cm.acme.com
-  chartVer: 0.0.1
+  build-config.properties: |
+    project=go-demo-3
+    image=vfarcic/go-demo-3
+    domain=acme.com
+    addr=go-demo-3.acme.com
+    cmAddr=cm.acme.com
+    chartVer=0.0.1
 

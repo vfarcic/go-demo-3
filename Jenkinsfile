@@ -40,9 +40,12 @@ spec:
 """
 ) {
   node("kubernetes") {
-    node("docker") {
-      stage("build") {
-        props = readProperties interpolate: true, file: '/etc/config/build-config'
+    stage("build") {
+      container("helm") {
+        sh "cp /etc/config/build-config.properties ."
+        props = readProperties interpolate: true, file: "build-config.properties"
+      }
+      node("docker") {
         checkout scm
         k8sBuildImageBeta(props.image)
       }
