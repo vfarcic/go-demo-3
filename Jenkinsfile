@@ -40,7 +40,7 @@ spec:
         stage("build") {
             def scmVars = checkout scm
             def commitHash = scmVars.GIT_COMMIT
-            def shortGitCommit = "${commitHash.GIT_COMMIT[0..10]}"
+            def shortGitCommit = "${commitHash[0..10]}"
 
             echo "${shortGitCommit}"
 
@@ -50,10 +50,9 @@ spec:
                     usernameVariable: "USER",
                     passwordVariable: "PASS"
             )]) {
-                sh """sudo docker login -u $USER -p $PASS"""
-                sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -i . """
+                sh """ sudo docker login -u $USER -p $PASS """
+                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -p -i . """
             }
-            sh """sudo docker image push ${env.IMAGE}:${env.TAG_BETA}"""
         }
     }
 
