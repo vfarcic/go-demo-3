@@ -41,6 +41,8 @@ spec:
             git "${env.REPO}"
 
             echo "${env.GIT_COMMIT}"
+
+            sh "ls -al"
             
             sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -t ${env.shortGitCommit} -i . """
             withCredentials([usernamePassword(
