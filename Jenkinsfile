@@ -39,7 +39,9 @@ spec:
     node("docker") {
         stage("build") {
             git "${env.REPO}"
-            env.shortGitCommit = "${env.GIT_COMMIT[0..10]}"
+
+            echo "${env.GIT_COMMIT}"
+            
             sh """./build_docker.sh -n ${env.IMAGE} -l -t ${env.TAG_BETA} -t ${env.shortGitCommit} -i . """
             withCredentials([usernamePassword(
                     credentialsId: "docker",
