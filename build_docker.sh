@@ -12,7 +12,7 @@ readonly TIMESTAMP=$(date +%Y%m%d%H%M)
 
 usage() {
     log_console "Usage:"
-    log_console "    $SCRIPT_NAME $IMAGE_NAME_ARG $TAG_ARG $TAG_TIMESTAMP_ARG $TAG_LATEST_ARG $PUSH $IMAGE_DIR_ARG -  build, tag and push the jenkins image to the docker registry"
+    log_console "    $SCRIPT_NAME $IMAGE_NAME_ARG $TAG_ARG $TAG_TIMESTAMP_ARG $TAG_LATEST_ARG $PUSH $IMAGE_DIR_ARG -  build, tag and push the docker image to the docker registry"
     exit 1
 }
 
@@ -44,19 +44,19 @@ function docker_push
     fi
 }
 
-TAGS=
+TAG_COMMAND=
 # Main
 while getopts "n:t:ldpi:" opt; do
   case $opt in
     n) IMAGE_NAME="${OPTARG}" ;;
 	t) TAG="$IMAGE_NAME:${OPTARG}"
-	   TAGS="$TAGS -t $TAG"
+	   TAGS+=("$TAG")
 	   ;;
     d) TIMESTAMP_TAG="$IMAGE_NAME:$TIMESTAMP"
-       TAGS="$TAGS -t $TIMESTAMP_TAG"
+       TAGS+=("$TIMESTAMP_TAG")
 	   ;;
 	l) LATEST_TAG="$IMAGE_NAME:latest"
-	   TAGS="$TAGS -t $LATEST_TAG"
+	   TAGS+=("$LATEST_TAG")
 	   ;;
 	p) PUSH_FLAG=true ;;
 	i) IMAGE_DIR="${OPTARG}" ;;
@@ -64,22 +64,23 @@ while getopts "n:t:ldpi:" opt; do
   esac
 done
 
-if [[ -z $TAG && -z $TIMESTAMP_TAG && -z $LATEST_TAG ]]; then
+if [[ -z $TAGS && -z $TIMESTAMP_TAG && -z $LATEST_TAG ]]; then
     usage;
 fi
 if [[ -z $IMAGE_DIR || -z $IMAGE_NAME ]]; then
     usage;
 fi
 
-log_console "Tagging as $TAGS"
-sudo docker build $TAGS $IMAGE_DIR
+for val in "${TAGS[@]}"; do
+    log_console "Tagging as $val"
+	TAG_COMMAND="$TAG_COMMAND -t $val"
+done
 
-if [[ ! -z $LATEST_TAG ]]; then
-    docker_push ${LATEST_TAG}
-fi
-if [[ ! -z $TIMESTAMP_TAG ]]; then
-    docker_push ${TIMESTAMP_TAG}
-fi
-if [[ ! -z $TAG ]]; then
-    docker_push ${TAG}
-fi
+sudo docker build $TAG_COMMAND $IMAGE_DIR
+
+for val in "${TAGS[@]}"; do
+	docker_push $val
+done
+
+
+
