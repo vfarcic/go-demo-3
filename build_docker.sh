@@ -36,7 +36,7 @@ function docker_push
     if [[ ${PUSH_FLAG} = true ]]; then
         if [[ ! -z $1 ]]; then
             log_console "pushing as $1"
-            docker push $1
+            sudo docker push $1
         else
             echo "no tag been provided to push "
             exit 1
@@ -72,7 +72,7 @@ if [[ -z $IMAGE_DIR || -z $IMAGE_NAME ]]; then
 fi
 
 log_console "Tagging as $TAGS"
-docker build $TAGS $IMAGE_DIR
+sudo docker build $TAGS $IMAGE_DIR
 
 if [[ ! -z $LATEST_TAG ]]; then
     docker_push ${LATEST_TAG}
