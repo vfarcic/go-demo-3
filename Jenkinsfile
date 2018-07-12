@@ -62,7 +62,7 @@ spec:
 
     node("docker") {
         stage("build") {
-
+            unstash 'source'
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -70,7 +70,7 @@ spec:
                     passwordVariable: "PASS"
             )]) {
                 sh """ sudo docker login -u $USER -p $PASS """
-                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -t ${shortGitCommit} -l -p -i . """
+                sh """ ./build_docker.sh -n ${env.IMAGE} -t ${env.TAG_BETA} -t ${shortGitCommit} -p -i . """
             }
         }
     }
@@ -80,7 +80,6 @@ spec:
 
         stage("func-test") {
             try {
-                unstash 'source'
 
                 container("helm") {
                     sh """helm upgrade \
