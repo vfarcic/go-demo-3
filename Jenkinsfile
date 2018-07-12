@@ -31,11 +31,6 @@ spec:
     args: ["100000"]
   - name: golang
     image: golang:1.9
-    resources:
-      limits:
-        memory: 512Mi
-      requests:
-        memory: 1Gi
     command: ["sleep"]
     args: ["100000"]
 """
