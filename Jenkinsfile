@@ -41,9 +41,8 @@ spec:
 """
 ) {
 
-    node(env.BUILDER_POD) {
-
-        container("git") {
+    node("docker") {
+        stage("build") {
             def scmVars = checkout scm
             def commitHash = scmVars.GIT_COMMIT
             env.shortGitCommit = "${commitHash[0..10]}"
@@ -57,12 +56,6 @@ spec:
             match.matches()
             def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
             env.newVersion = "${ major + "." + minor + "." + (revision.toInteger() + 1) }"
-        }
-    }
-
-    node("docker") {
-        stage("build") {
-            unstash 'source'
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -129,6 +122,39 @@ spec:
 
             }
 
+        }
+
+
+        stage("deploy") {
+            try {
+                container("helm") {
+                    sh """helm upgrade \
+            go-demo-3 \
+            helm/go-demo-3 -i \
+            --tiller-namespace go-demo-3-build \
+            --namespace go-demo-3 \
+            --set image.tag=${env.TAG} \
+            --set ingress.host=${env.PROD_ADDRESS}"""
+                }
+                container("kubectl") {
+                    sh """kubectl -n go-demo-3 \
+            rollout status deployment \
+            go-demo-3"""
+                }
+                container("golang") {
+                    sh "go get -d -v -t"
+                    sh """DURATION=1 ADDRESS=${env.PROD_ADDRESS} \
+            go test ./... -v \
+            --run ProductionTest"""
+                }
+            } catch(e) {
+                container("helm") {
+                    sh """helm rollback \
+            go-demo-3 0 \
+            --tiller-namespace go-demo-3-build"""
+                    error "Failed production tests"
+                }
+            }
         }
     }
 }
