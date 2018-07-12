@@ -3,12 +3,13 @@ import java.text.SimpleDateFormat
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER // NEW!!!
 env.BUILDER_POD = "builder-pod-${UUID.randomUUID().toString()}"
 
-env.DH_USER="digitalinside"
-env.USERNAME="tigran10"
+env.DH_USER = "digitalinside"
+env.USERNAME = "tigran10"
 
 env.REPO = "https://github.com/${env.USERNAME}/go-demo-3.git" // Replace me
 env.IMAGE = "${DH_USER}/go-demo-3" // Replace me
 env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.192.168.0.10.nip.io" // Replace `acme.com` with the $ADDR retrieved earlier
+env.TAG = "${currentBuild.displayName}"
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
 
@@ -42,7 +43,7 @@ spec:
             def commitHash = scmVars.GIT_COMMIT
             def shortGitCommit = "${commitHash[0..10]}"
 
-            stash  name: 'source', useDefaultExcludes: false
+            stash name: 'source', useDefaultExcludes: false
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -80,7 +81,7 @@ spec:
                     sh """go test ./... -v \
             --run FunctionalTest"""
                 }
-            } catch(e) {
+            } catch (e) {
                 error "Failed functional tests"
             } finally {
                 container("helm") {
@@ -88,6 +89,23 @@ spec:
             --tiller-namespace go-demo-3-build \
             --purge"""
                 }
+            }
+        }
+
+        node("docker") {
+            stage("release") {
+                sh """sudo docker pull ${env.IMAGE}:${env.TAG_BETA}"""
+                sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:${env.TAG}"""
+                sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:latest"""
+                withCredentials([usernamePassword(
+                        credentialsId: "docker",
+                        usernameVariable: "USER",
+                        passwordVariable: "PASS"
+                )]) {
+                    sh """sudo docker login -u $USER -p $PASS"""
+                }
+                sh """sudo docker image push ${env.IMAGE}:${env.TAG}"""
+                sh """sudo docker image push ${env.IMAGE}:latest"""
             }
         }
     }
