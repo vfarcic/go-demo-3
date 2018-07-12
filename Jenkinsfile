@@ -34,29 +34,35 @@ spec:
     image: golang:1.9
     command: ["sleep"]
     args: ["100000"]
+  - name: git
+    image: alpine/git:latest
+    command: ["sleep"]
+    args: ["100000"]    
 """
 ) {
 
-    node("master") {
+    node(env.BUILDER_POD) {
 
-        def scmVars = checkout scm
-        def commitHash = scmVars.GIT_COMMIT
-        env.shortGitCommit = "${commitHash[0..10]}"
+        container("git") {
+            def scmVars = checkout scm
+            def commitHash = scmVars.GIT_COMMIT
+            env.shortGitCommit = "${commitHash[0..10]}"
 
-        stash name: 'source', useDefaultExcludes: false
+            stash name: 'source', useDefaultExcludes: false
 
-        sh "git fetch origin 'refs/tags/*:refs/tags/*'"
-        def version  = sh ( script: 'git tag -l | tail -n1', returnStdout: true ).trim() ?: 'v1.0.0'
-        def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
-        def match = version =~ parser
-        match.matches()
-        def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
-        env.newVersion = "${ major + "." + minor + "." + (revision.toInteger() + 1) }"
+            sh "git fetch origin 'refs/tags/*:refs/tags/*'"
+            def version  = sh ( script: 'git tag -l | tail -n1', returnStdout: true ).trim() ?: 'v1.0.0'
+            def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
+            def match = version =~ parser
+            match.matches()
+            def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
+            env.newVersion = "${ major + "." + minor + "." + (revision.toInteger() + 1) }"
+        }
     }
 
     node("docker") {
         stage("build") {
-            unstash 'source'
+
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
