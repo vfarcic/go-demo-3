@@ -37,13 +37,26 @@ spec:
 """
 ) {
 
+    node {
+
+        def scmVars = checkout scm
+        def commitHash = scmVars.GIT_COMMIT
+        env.shortGitCommit = "${commitHash[0..10]}"
+
+        stash name: 'source', useDefaultExcludes: false
+
+        sh "git fetch origin 'refs/tags/*:refs/tags/*'"
+        def version  = sh ( script: 'git tag -l | tail -n1', returnStdout: true ).trim() ?: 'v1.0.0'
+        def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
+        def match = version =~ parser
+        match.matches()
+        def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
+        env.newVersion = "${ major + "." + minor + "." + (revision.toInteger() + 1) }"
+    }
+
     node("docker") {
         stage("build") {
-            def scmVars = checkout scm
-            def commitHash = scmVars.GIT_COMMIT
-            def shortGitCommit = "${commitHash[0..10]}"
-
-            stash name: 'source', useDefaultExcludes: false
+            unstash 'source'
 
             withCredentials([usernamePassword(
                     credentialsId: "docker",
@@ -93,20 +106,24 @@ spec:
         }
 
         node("docker") {
-            stage("release") {
-                sh """sudo docker pull ${env.IMAGE}:${env.TAG_BETA}"""
-                sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:${env.TAG}"""
-                sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:latest"""
-                withCredentials([usernamePassword(
-                        credentialsId: "docker",
-                        usernameVariable: "USER",
-                        passwordVariable: "PASS"
-                )]) {
-                    sh """sudo docker login -u $USER -p $PASS"""
+            if(env.BRANCH_NAME == 'master'){
+                stage("release") {
+                    sh """sudo docker pull ${env.IMAGE}:${env.TAG_BETA}"""
+                    sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:${env.newVersion}"""
+                    sh """sudo docker image tag ${env.IMAGE}:${env.TAG_BETA} ${env.IMAGE}:latest"""
+                    withCredentials([usernamePassword(
+                            credentialsId: "docker",
+                            usernameVariable: "USER",
+                            passwordVariable: "PASS"
+                    )]) {
+                        sh """sudo docker login -u $USER -p $PASS"""
+                    }
+                    sh """sudo docker image push ${env.IMAGE}:${env.newVersion}"""
+                    sh """sudo docker image push ${env.IMAGE}:latest"""
                 }
-                sh """sudo docker image push ${env.IMAGE}:${env.TAG}"""
-                sh """sudo docker image push ${env.IMAGE}:latest"""
+
             }
+
         }
     }
 }
