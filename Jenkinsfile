@@ -8,7 +8,7 @@ env.USERNAME="tigran10"
 
 env.REPO = "https://github.com/${env.USERNAME}/go-demo-3.git" // Replace me
 env.IMAGE = "${DH_USER}/go-demo-3" // Replace me
-env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.127.0.0.1.nip.io" // Replace `acme.com` with the $ADDR retrieved earlier
+env.ADDRESS = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}.192.168.0.10.nip.io" // Replace `acme.com` with the $ADDR retrieved earlier
 env.TAG_BETA = "${currentBuild.displayName}-${env.BRANCH_NAME}"
 env.CHART_NAME = "go-demo-3-${env.BUILD_NUMBER}-${env.BRANCH_NAME}"
 
