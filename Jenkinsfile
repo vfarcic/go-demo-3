@@ -37,7 +37,7 @@ spec:
 """
 ) {
 
-    node {
+    node("master") {
 
         def scmVars = checkout scm
         def commitHash = scmVars.GIT_COMMIT
