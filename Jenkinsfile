@@ -50,14 +50,11 @@ spec:
 
         sh "git fetch origin 'refs/tags/*:refs/tags/*'"
         def version = sh(script: 'git tag -l | tail -n1', returnStdout: true).trim() ?: 'v1.0.0'
-        echo version
         def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
         def match = version =~ parser
         match.matches()
         def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
         env.newVersion = "${major + "." + minor + "." + (revision.toInteger() + 1)}"
-
-        echo env.newVersion
     }
 
     node("docker") {
@@ -74,7 +71,7 @@ spec:
     }
 
     node(env.BUILDER_POD) {
-
+        unstash name: 'source'
 
         stage("func-test") {
             try {
@@ -123,6 +120,9 @@ spec:
                     }
                     sh """sudo docker image push ${env.IMAGE}:${env.newVersion}"""
                     sh """sudo docker image push ${env.IMAGE}:latest"""
+
+                    sh """ git tag $env.newVersion master  """
+                    sh """ git push origin $env.newVersion """
                 }
 
             }
@@ -131,35 +131,32 @@ spec:
 
 
         stage("deploy") {
-            try {
-                container("helm") {
-                    sh """helm upgrade \
-            go-demo-3 \
-            helm/go-demo-3 -i \
-            --tiller-namespace go-demo-3-build \
-            --namespace go-demo-3 \
-            --set image.tag=${env.TAG} \
-            --set ingress.host=${env.PROD_ADDRESS}"""
-                }
-                container("kubectl") {
-                    sh """kubectl -n go-demo-3 \
-            rollout status deployment \
-            go-demo-3"""
-                }
-                container("golang") {
-                    sh "go get -d -v -t"
-                    sh """DURATION=1 ADDRESS=${env.PROD_ADDRESS} \
-            go test ./... -v \
-            --run ProductionTest"""
-                }
-            } catch (e) {
-                container("helm") {
-                    sh """helm rollback \
-            go-demo-3 0 \
-            --tiller-namespace go-demo-3-build"""
-                    error "Failed production tests"
+            if (env.BRANCH_NAME == 'master') {
+                try {
+                    container("helm") {
+                        sh """helm upgrade \
+                                go-demo-3 \
+                                helm/go-demo-3 -i \
+                                --tiller-namespace go-demo-3-build \
+                                --namespace go-demo-3 \
+                                --set image.tag=${env.TAG} \
+                                --set ingress.host=${env.PROD_ADDRESS}"""
+                    }
+                    container("kubectl") {
+                        sh """kubectl -n go-demo-3 rollout status deployment go-demo-3"""
+                    }
+                    container("golang") {
+                        sh "go get -d -v -t"
+                        sh """DURATION=1 ADDRESS=${env.PROD_ADDRESS} go test ./... -v --run ProductionTest"""
+                    }
+                } catch (e) {
+                    container("helm") {
+                        sh """helm rollback go-demo-3 0 --tiller-namespace go-demo-3-build"""
+                        error "Failed production tests"
+                    }
                 }
             }
+
         }
     }
 }
