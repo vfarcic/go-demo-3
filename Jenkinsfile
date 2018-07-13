@@ -95,7 +95,8 @@ spec:
                 container("kubectl") {
                     sh """kubectl -n go-demo-3-build rollout status deployment ${env.CHART_NAME}"""
                 }
-                container("golang") { // Uses env ADDRESS
+                container("golang") {
+                    echo "--------this is NOT DONE--------"
                     sh "go get -d -v -t"
                     echo "--------this is done--------"
                     sh "ls -al"
