@@ -57,14 +57,11 @@ spec:
         def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
         env.newVersion = "${major + "." + minor + "." + (revision.toInteger() + 1)}"
 
-
-        def userInput = true
-        def didTimeout = false
         try {
             timeout(time: 15, unit: 'SECONDS') { // change to a convenient timeout for you
                 env.newVersion = input(
                         id: 'ProceedRelease', message: 'Was this successful?', parameters: [
-                        [$class: 'StringParameterDefinition', defaultValue: env.newVersion, description: '', name: 'Please confirm release version ']
+                        [$class: 'StringParameterDefinition', defaultValue: env.newVersion, description: '', name: 'Confirm release version ']
                 ])
             }
         } catch(err) { }
