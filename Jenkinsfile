@@ -43,32 +43,33 @@ spec:
 ) {
 
     node("docker") {
+
+        // Read GIT info
+        def scmVars = checkout scm
+        def commitHash = scmVars.GIT_COMMIT
+        env.shortGitCommit = "${commitHash[0..10]}"
+
+        stash name: 'source', useDefaultExcludes: false
+
+        // Read Tags
+        sh "git fetch origin 'refs/tags/*:refs/tags/*'"
+        def version = sh(script: 'git tag -l | tail -n1', returnStdout: true).trim() ?: 'v1.0.0'
+        def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
+        def match = version =~ parser
+        match.matches()
+        def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
+        env.newVersion = "${major + "." + minor + "." + (revision.toInteger() + 1)}"
+
+        try {
+            timeout(time: 15, unit: 'SECONDS') { // change to a convenient timeout for you
+                env.newVersion = input(
+                        id: 'ProceedRelease', message: 'Was this successful?', parameters: [
+                        [$class: 'StringParameterDefinition', defaultValue: env.newVersion, description: '', name: 'Confirm release version ']
+                ])
+            }
+        } catch(err) { }
+
         stage("build") {
-
-            // Read GIT info
-            def scmVars = checkout scm
-            def commitHash = scmVars.GIT_COMMIT
-            env.shortGitCommit = "${commitHash[0..10]}"
-
-            stash name: 'source', useDefaultExcludes: false
-
-            // Read Tags
-            sh "git fetch origin 'refs/tags/*:refs/tags/*'"
-            def version = sh(script: 'git tag -l | tail -n1', returnStdout: true).trim() ?: 'v1.0.0'
-            def parser = /(?<major>v\d+).(?<minor>\d+).(?<revision>\d+)/
-            def match = version =~ parser
-            match.matches()
-            def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
-            env.newVersion = "${major + "." + minor + "." + (revision.toInteger() + 1)}"
-
-            try {
-                timeout(time: 15, unit: 'SECONDS') { // change to a convenient timeout for you
-                    env.newVersion = input(
-                            id: 'ProceedRelease', message: 'Was this successful?', parameters: [
-                            [$class: 'StringParameterDefinition', defaultValue: env.newVersion, description: '', name: 'Confirm release version ']
-                    ])
-                }
-            } catch(err) { }
 
             // Build docker
             withCredentials([usernamePassword(
