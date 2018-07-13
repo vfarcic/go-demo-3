@@ -42,8 +42,10 @@ spec:
 """
 ) {
 
-    node("docker") {
 
+    // Most of those can go to shared-jenkins-lib
+    //
+    node {
         // Read GIT info
         def scmVars = checkout scm
         def commitHash = scmVars.GIT_COMMIT
@@ -60,6 +62,7 @@ spec:
         def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
         env.newVersion = "${major + "." + minor + "." + (revision.toInteger() + 1)}"
 
+        //Give a chance for a custom version
         try {
             timeout(time: 15, unit: 'SECONDS') { // change to a convenient timeout for you
                 env.newVersion = input(
@@ -68,6 +71,9 @@ spec:
                 ])
             }
         } catch(err) { }
+    }
+
+    node("docker") {
 
         stage("build") {
 
