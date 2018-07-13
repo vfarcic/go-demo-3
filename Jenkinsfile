@@ -42,7 +42,7 @@ spec:
 ) {
 
     node("docker") {
-        stage("build") {
+
             def scmVars = checkout scm
             def commitHash = scmVars.GIT_COMMIT
             env.shortGitCommit = "${commitHash[0..10]}"
@@ -57,6 +57,7 @@ spec:
             def (major, minor, revision) = ['major', 'minor', 'revision'].collect { match.group(it) }
             env.newVersion = "${ major + "." + minor + "." + (revision.toInteger() + 1) }"
 
+        stage("build") {
             withCredentials([usernamePassword(
                     credentialsId: "docker",
                     usernameVariable: "USER",
