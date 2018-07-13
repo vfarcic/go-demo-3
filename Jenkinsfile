@@ -150,6 +150,8 @@ spec:
                     }
                     container("golang") {
                         sh "go get -d -v -t"
+                        echo "--------this is done--------"
+                        sh "ls -al"
                         sh """DURATION=1 ADDRESS=${env.PROD_ADDRESS} go test ./... -v --run ProductionTest"""
                     }
                 } catch (e) {
