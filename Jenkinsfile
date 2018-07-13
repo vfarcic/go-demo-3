@@ -67,15 +67,7 @@ spec:
                         [$class: 'StringParameterDefinition', defaultValue: env.newVersion, description: '', name: 'Please confirm release version ']
                 ])
             }
-        } catch(err) { // timeout reached or input false
-            def user = err.getCauses()[0].getUser()
-            if('SYSTEM' == user.toString()) { // SYSTEM means timeout.
-                didTimeout = true
-            } else {
-                userInput = false
-                echo "Aborted by: [${user}]"
-            }
-        }
+        } catch(err) { }
     }
 
     node("docker") {
