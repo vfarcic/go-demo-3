@@ -99,7 +99,7 @@ spec:
                     sh "go get -d -v -t"
                     echo "--------this is done--------"
                     sh "ls -al"
-                    sh """go test ./... -v --run FunctionalTest"""
+                    sh """ADDRESS=${env.ADDRESS} go test ./... -v --run FunctionalTest"""
                 }
             } catch (e) {
                 error "Failed functional tests"
