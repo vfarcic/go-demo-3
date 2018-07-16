@@ -108,9 +108,7 @@ spec:
                     sh """kubectl -n go-demo-3-build rollout status deployment ${env.CHART_NAME}"""
                 }
                 container("golang") {
-                    echo "--------this is NOT DONE--------"
                     sh "go get -d -v -t"
-                    echo "--------this is done--------"
                     sh "ls -al"
                     sh """ADDRESS=${env.ADDRESS} go test ./... -v --run FunctionalTest"""
                 }
