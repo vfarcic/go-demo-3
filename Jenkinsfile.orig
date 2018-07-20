@@ -1,11 +1,12 @@
 import java.text.SimpleDateFormat
 
 def props
+def label = "jenkins-slave-${UUID.randomUUID().toString()}"
 currentBuild.displayName = new SimpleDateFormat("yy.MM.dd").format(new Date()) + "-" + env.BUILD_NUMBER
 
 podTemplate(
-  label: "kubernetes",
-  namespace: "go-demo-3-build",
+  label: label,
+  namespace: "go-demo-3-build", // Not allowed with declarative
   serviceAccount: "build",
   yaml: """
 apiVersion: v1
@@ -33,13 +34,13 @@ spec:
       name: build-config
 """
 ) {
-  node("kubernetes") {
+  node(label) {
     stage("build") {
       container("helm") {
         sh "cp /etc/config/build-config.properties ."
         props = readProperties interpolate: true, file: "build-config.properties"
       }
-      node("docker") {
+      node("docker") { // Not allowed with declarative
         checkout scm
         k8sBuildImageBeta(props.image)
       }
@@ -64,28 +65,30 @@ spec:
         }
       }
     }
-    stage("release") {
-      node("docker") {
-        k8sPushImage(props.image)
-      }
-      container("helm") {
-        k8sPushHelm(props.project, props.chartVer, props.cmAddr)
-      }
-    }
-    stage("deploy") {
-      try {
+    if ("${BRANCH_NAME}" == "master") {
+      stage("release") {
+        node("docker") {
+          k8sPushImage(props.image)
+        }
         container("helm") {
-          k8sUpgrade(props.project, props.addr)
+          k8sPushHelm(props.project, props.chartVer, props.cmAddr)
         }
-        container("kubectl") {
-          k8sRollout(props.project)
-        }
-        container("golang") {
-          k8sProdTestGolang(props.addr)
-        }
-      } catch(e) {
-        container("helm") {
-          k8sRollback(props.project)
+      }
+      stage("deploy") {
+        try {
+          container("helm") {
+            k8sUpgrade(props.project, props.addr)
+          }
+          container("kubectl") {
+            k8sRollout(props.project)
+          }
+          container("golang") {
+            k8sProdTestGolang(props.addr)
+          }
+        } catch(e) {
+          container("helm") {
+            k8sRollback(props.project)
+          }
         }
       }
     }
