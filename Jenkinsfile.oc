@@ -24,6 +24,10 @@ spec:
     image: vfarcic/kubectl
     command: ["cat"]
     tty: true
+  - name: oc
+    image: vfarcic/openshift-client
+    command: ["cat"]
+    tty: true
   - name: golang
     image: golang:1.9
     command: ["cat"]
@@ -49,7 +53,7 @@ spec:
       try {
         container("helm") {
           checkout scm
-          k8sUpgradeBeta(props.project, props.domain)
+          k8sUpgradeBeta(props.project, props.domain, "--set replicaCount=2 --set dbReplicaCount=1")
         }
         container("oc") {
           ocCreateEdgeRouteBuild(props.project, props.domain)
