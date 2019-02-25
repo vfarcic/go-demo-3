@@ -36,7 +36,7 @@ dbPersistence:
   accessMode: ReadWriteOnce
   size: 2Gi
 canary:
-  enable: "false"
+  enable: false
   service:
     hosts:
     - go-demo-3.istio.example.com
