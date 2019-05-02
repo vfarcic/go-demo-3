@@ -16,7 +16,7 @@
   # If you are running anything else
   export ADDR=$(kubectl -n {{ .Release.Namespace }} get nodes -o jsonpath="{.items[0].status.addresses[0].address}")
 
-  curl http://$NODE_IP:$PORT/demo/hello
+  curl http://$ADDR:$PORT/demo/hello
 {{- else }}
   If the application is running in OpenShift, please create a Route to enable access.
 
