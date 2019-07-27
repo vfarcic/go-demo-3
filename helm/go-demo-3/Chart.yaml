@@ -10,7 +10,7 @@ keywords:
 - mongodb
 home: http://www.devopstoolkitseries.com/
 sources:
-- https://github.com/vfarcic/go-demo-3
+- https://github.com/JohnnyBeProgramming/go-demo-3
 maintainers:
 - name: Viktor Farcic
   email: viktor@farcic.com
