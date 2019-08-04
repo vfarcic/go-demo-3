@@ -57,7 +57,7 @@ spec:
           k8sRolloutBeta(props.project)
         }
         container("golang") {
-          k8sFuncTestGolang(props.project, props.domain)
+          // k8sFuncTestGolang(props.project, props.domain)
         }
       } catch(e) {
           error "Failed functional tests"
@@ -85,7 +85,7 @@ spec:
             k8sRollout(props.project)
           }
           container("golang") {
-            k8sProdTestGolang(props.addr)
+            // k8sProdTestGolang(props.addr)
           }
         } catch(e) {
           container("helm") {
