@@ -38,7 +38,9 @@ spec:
     stage("build") {
       container("helm") {
         sh "cp /etc/config/build-config.properties ."
-        props = readProperties interpolate: true, file: "build-config.properties"
+        script {
+          props = readProperties interpolate: true, file: "build-config.properties"
+        }
       }
       node("docker") { // Not allowed with declarative
         checkout scm
