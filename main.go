@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -141,7 +142,7 @@ func PersonServer(w http.ResponseWriter, req *http.Request) {
 }
 
 var prometheusHandler = func() http.Handler {
-	return prometheus.Handler()
+	return promhttp.Handler()
 }
 
 var findPeople = func(res *[]Person) error {

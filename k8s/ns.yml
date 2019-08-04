@@ -147,5 +147,5 @@ roleRef:
   name: cluster-admin
 subjects:
 - kind: ServiceAccount
-  name: jenkins
+  name: go-demo-3-jenkins
   namespace: go-demo-3-jenkins
