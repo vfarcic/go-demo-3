@@ -32,7 +32,7 @@ spec:
       mountPath: /workspace
     workingDir: /workspace
   - name: golang
-    image: golang:1.9
+    image: golang:1.12
     command: ["sleep"]
     args: ["100000"]
     volumeMounts:
