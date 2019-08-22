@@ -8,12 +8,12 @@ metadata:
     ingress.kubernetes.io/ssl-redirect: "false"
     ingress.kubernetes.io/rewrite-target: "/demo"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    nginx.ingress.kubernetes.io/rewrite-target: "/demo"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
 spec:
   rules:
   - http:
       paths:
-      - path: /beta/demo
+      - path: /beta(/|$)(.*)
         backend:
           serviceName: api
           servicePort: 8080
