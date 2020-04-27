@@ -1,5 +1,7 @@
 module go-demo-6
 
+go 1.14
+
 require (
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -12,5 +14,6 @@ require (
 	github.com/prometheus/procfs v0.0.0-20181204211112-1dc9a6cbc91a
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.2.2
+	golang.org/x/tools v0.0.0-20200427163959-9ea0146da6d7 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )
