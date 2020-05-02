@@ -1,0 +1,11 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <JavaCodeStyleSettings>
+      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="500" />
+      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="300" />
+    </JavaCodeStyleSettings>
+    <XML>
+      <option name="XML_KEEP_BLANK_LINES" value="0" />
+    </XML>
+  </code_scheme>
+</component>
