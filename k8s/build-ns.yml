@@ -36,17 +36,17 @@ metadata:
 spec:
   limits:
   - default:
+      memory: 300Mi
+      cpu: 0.3
+    defaultRequest:
       memory: 200Mi
       cpu: 0.2
-    defaultRequest:
-      memory: 100Mi
-      cpu: 0.1
     max:
-      memory: 500Mi
-      cpu: 0.5
+      memory: 600Mi
+      cpu: 0.6
     min:
-      memory: 10Mi
-      cpu: 0.05
+      memory: 50Mi
+      cpu: 0.1
     type: Container
 
 ---
@@ -59,7 +59,7 @@ metadata:
 spec:
   hard:
     requests.cpu: 2
-    requests.memory: 3Gi
+    requests.memory: 2Gi
     limits.cpu: 3
-    limits.memory: 4Gi
+    limits.memory: 3Gi
     pods: 15

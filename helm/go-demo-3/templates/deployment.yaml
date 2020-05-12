@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: api
-        image: "vfarcic/go-demo-3:{{ .Values.image.tag }}"
+        image: "trenunu/go-demo-3:{{ .Values.image.tag }}"
         env:
         - name: DB
           value: {{ template "helm.fullname" . }}-db
